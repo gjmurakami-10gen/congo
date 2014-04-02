@@ -29,11 +29,15 @@
 BEGIN_DECLS
 
 
-typedef struct
+typedef struct _WireProtocolWriter WireProtocolWriter;
+
+
+struct _WireProtocolWriter
 {
-   Socket   *sock;
-   uint64_t  timeout;
-} WireProtocolWriter;
+   Socket *sock;
+   uint64_t timeout;
+   void (*fuzzer) (WireProtocolMessage *message);
+};
 
 
 void WireProtocolWriter_Init    (WireProtocolWriter *writer,

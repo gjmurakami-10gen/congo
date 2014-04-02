@@ -54,8 +54,22 @@ WireProtocolWriter_Write (WireProtocolWriter *writer,   /* IN */
    ASSERT (writer);
    ASSERT (message);
 
+   /*
+    * Gather everything while we have non-mutated data.
+    */
    Array_Init (&iovecs, sizeof(struct iovec), false);
    WireProtocolMessage_Gather (message, &iovecs);
+
+   /*
+    * If there is a mutator hooked for fuzzing, run it.
+    */
+   if (writer->fuzzer) {
+      writer->fuzzer (message);
+   }
+
+   /*
+    * Finally do endianness conversion.
+    */
    WireProtocolMessage_ToLe (message);
 
    Memory_Zero (&msg, sizeof msg);
