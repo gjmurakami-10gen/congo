@@ -123,8 +123,16 @@ Fuzzer_FuzzOpcode (WireProtocolMessage *message) /* IN */
 }
 
 
+static void
+Fuzzer_FuzzResponseTo (WireProtocolMessage *message) /* IN */
+{
+   message->header.response_to = Random_Int32 () ^ message->header.response_to;
+}
+
+
 static Fuzzer gFuzzers [] = {
    Fuzzer_FuzzOpcode,
+   Fuzzer_FuzzResponseTo,
    Fuzzer_FuzzReplyBsonLength,
    Fuzzer_FuzzReplyFlags,
 };
