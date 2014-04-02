@@ -40,7 +40,7 @@
 #include <WireProtocolWriter.h>
 
 
-typedef void (*Fuzzer) (WireProtocolReply *reply);
+typedef void (*Fuzzer) (WireProtocolMessage *message);
 
 
 static char      *gBindIp = "0.0.0.0";
@@ -88,15 +88,18 @@ Fuzzer_GetServerConnection (Connection *client) /* IN */
 
 
 static void
-Fuzzer_FuzzReplyFlags (WireProtocolReply *reply) /* IN */
+Fuzzer_FuzzReplyFlags (WireProtocolMessage *message) /* IN */
 {
+   WireProtocolReply *reply = &message->reply;
+
    reply->flags |= Random_Int32 ();
 }
 
 
 static void
-Fuzzer_FuzzReplyBsonLength (WireProtocolReply *reply) /* IN */
+Fuzzer_FuzzReplyBsonLength (WireProtocolMessage *message) /* IN */
 {
+   WireProtocolReply *reply = &message->reply;
    const int32_t len = UINT32_TO_LE (-1234);
    bson_reader_t *reader;
    const bson_t *doc;
@@ -113,18 +116,19 @@ Fuzzer_FuzzReplyBsonLength (WireProtocolReply *reply) /* IN */
 }
 
 
+
 static Fuzzer gFuzzers [] = {
    Fuzzer_FuzzReplyBsonLength,
    Fuzzer_FuzzReplyFlags,
 };
 
 
-static void
-Fuzzer_FuzzReply (WireProtocolReply *reply) /* IN */
+static Fuzzer
+Fuzzer_GetNext (void)
 {
    int fuzzer;
    fuzzer = (gNextFuzzer++) % N_ELEMENTS (gFuzzers);
-   return gFuzzers [fuzzer] (reply);
+   return gFuzzers [fuzzer];
 }
 
 
@@ -241,9 +245,7 @@ Fuzzer_HandleMessage (SocketManager *socket_manager,  /* IN */
       /*
        * Fuzz the message if necessary.
        */
-      if (should_fuzz) {
-         Fuzzer_FuzzReply (&reply.reply);
-      }
+      connection->writer.fuzzer = should_fuzz ? Fuzzer_GetNext () : NULL;
 
       /*
        * Send the reply to the client.
