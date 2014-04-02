@@ -116,8 +116,15 @@ Fuzzer_FuzzReplyBsonLength (WireProtocolMessage *message) /* IN */
 }
 
 
+static void
+Fuzzer_FuzzOpcode (WireProtocolMessage *message) /* IN */
+{
+   message->header.opcode = Random_Int32 ();
+}
+
 
 static Fuzzer gFuzzers [] = {
+   Fuzzer_FuzzOpcode,
    Fuzzer_FuzzReplyBsonLength,
    Fuzzer_FuzzReplyFlags,
 };
