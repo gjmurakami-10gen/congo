@@ -1,0 +1,41 @@
+{
+   "concurrency": 100,
+   "requests": 1000,
+   "keepalive": true,
+   "operations": [
+      {
+         "type": "insert",
+         "collection": "test.test",
+         "document": {"test": "document"},
+         "gle": {"w": 1}
+      }, {
+         "type": "query",
+         "collection": "test.test",
+         "selector": {},
+         "fields": {},
+         "skip": 0,
+         "n_return": 0
+      }, {
+         "type": "query",
+         "collection": "admin.$cmd",
+         "selector": {"buildInfo": 1},
+         "fields": {},
+         "skip": 0,
+         "n_return": 1
+      }, {
+         "type": "delete",
+         "collection": "test.test",
+         "selector": {"z": false},
+         "multi": false,
+         "gle": {"w": 1}
+      }, {
+         "type": "update",
+         "collection": "test.test",
+         "selector": {"a.b": 3},
+         "update": {"$set": {"z": true}},
+         "multi": true,
+         "upsert": true,
+         "gle": {"w": 1}
+      }
+   ]
+}
