@@ -1,6 +1,6 @@
 # Congo
 
-Congo is a bunch of C code to help write utilities.
+Congo is a set of Coroutine based class libraries to help write concurrent systems.
 
 BSON support is provided via libbson and is bundled with this project.
 
