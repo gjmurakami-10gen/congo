@@ -37,6 +37,10 @@ typedef struct _SocketManagerHandlers SocketManagerHandlers;
 
 struct _SocketManagerHandlers
 {
+   bool (*Accept)        (SocketManager *manager,
+                          Connection *connection,
+                          void *handler_data);
+
    bool (*HandleMessage) (SocketManager *manager,
                           Connection *connection,
                           WireProtocolMessage *message,

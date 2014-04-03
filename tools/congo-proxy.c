@@ -173,7 +173,7 @@ main (int argc,     /* IN */
       char *argv[]) /* IN */
 {
    SocketManagerHandlers handlers = {
-      Proxy_HandleMessage,
+      .HandleMessage = Proxy_HandleMessage,
    };
    SocketManager socket_manager;
    OptionContext context;

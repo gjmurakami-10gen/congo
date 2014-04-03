@@ -280,7 +280,7 @@ main (int argc,     /* IN */
       char *argv[]) /* IN */
 {
    SocketManagerHandlers handlers = {
-      Fuzzer_HandleMessage,
+      .HandleMessage = Fuzzer_HandleMessage,
    };
    SocketManager socket_manager;
    OptionContext context;

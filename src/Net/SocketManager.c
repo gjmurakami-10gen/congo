@@ -94,6 +94,15 @@ SocketManager_Init (SocketManager *socket_manager)
 }
 
 
+static bool
+SocketManager_Accept (SocketManager *manager,
+                      Connection *connection,
+                      void *handlers_data)
+{
+   return true;
+}
+
+
 void
 SocketManager_SetHandlers (SocketManager *socket_manager,
                            const SocketManagerHandlers *handlers,
@@ -103,6 +112,10 @@ SocketManager_SetHandlers (SocketManager *socket_manager,
 
    memcpy (&socket_manager->handlers, handlers, sizeof *handlers);
    socket_manager->handlers_data = handlers_data;
+
+   if (!socket_manager->handlers.Accept) {
+      socket_manager->handlers.Accept = SocketManager_Accept;
+   }
 
    if (!socket_manager->handlers.HandleMessage) {
       socket_manager->handlers.HandleMessage = SocketManager_HandleMessage;
@@ -123,12 +136,20 @@ SocketManager_RecvLoop (void *data) /* IN */
 
    Connection_Init (&connection, &task->socket);
 
+   if (!task->socket_manager->handlers.Accept
+         (task->socket_manager,
+          &connection,
+          task->socket_manager->handlers_data)) {
+      goto fail;
+   }
+
    while (ret && Connection_Recv (&connection, &msg)) {
       ret = task->socket_manager->handlers.HandleMessage (
          task->socket_manager, &connection, &msg,
          task->socket_manager->handlers_data);
    }
 
+fail:
    LOG_MESSAGE ("[%s]: Closing connection.", task->socket.name);
 
    Connection_Destroy (&connection);
