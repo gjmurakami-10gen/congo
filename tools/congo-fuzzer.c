@@ -51,11 +51,6 @@ static int        gNextFuzzer;
 static HashTable *gProxies;
 
 
-/*
- * TODO: We leak proxies.
- */
-
-
 static OptionEntry entries[] = {
    { "bind_ip", 0, 0, OPTION_ARG_STRING, &gBindIp,
      "The ip address to bind to [0.0.0.0]" },
@@ -275,11 +270,26 @@ Fuzzer_HandleMessage (SocketManager *socket_manager,  /* IN */
 }
 
 
+static void
+Fuzzer_ConnectionClosed (SocketManager *socket_manager,
+                         Connection *connection,
+                         void *handler_data)
+{
+   Connection *server;
+
+   if ((server = HashTable_Lookup (gProxies, connection))) {
+      Connection_Destroy (server);
+      HashTable_Remove (gProxies, connection);
+   }
+}
+
+
 int
 main (int argc,     /* IN */
       char *argv[]) /* IN */
 {
    SocketManagerHandlers handlers = {
+      .Closed = Fuzzer_ConnectionClosed,
       .HandleMessage = Fuzzer_HandleMessage,
    };
    SocketManager socket_manager;
