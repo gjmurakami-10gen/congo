@@ -41,6 +41,10 @@ struct _SocketManagerHandlers
                           Connection *connection,
                           void *handler_data);
 
+   void (*Closed)        (SocketManager *manager,
+                          Connection *connection,
+                          void *handler_data);
+
    bool (*HandleMessage) (SocketManager *manager,
                           Connection *connection,
                           WireProtocolMessage *message,

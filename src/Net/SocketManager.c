@@ -152,6 +152,12 @@ SocketManager_RecvLoop (void *data) /* IN */
 fail:
    LOG_MESSAGE ("[%s]: Closing connection.", task->socket.name);
 
+   if (task->socket_manager->handlers.Closed) {
+      task->socket_manager->handlers.Closed (
+         task->socket_manager, &connection,
+         task->socket_manager->handlers_data);
+   }
+
    Connection_Destroy (&connection);
    Socket_Close (&task->socket);
    Memory_Free (task);
