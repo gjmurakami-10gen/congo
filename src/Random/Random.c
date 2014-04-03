@@ -67,5 +67,5 @@ Random_Int32 (void)
       }
    }
 
-   return ret;
+   return val;
 }
