@@ -65,7 +65,7 @@ typedef struct lthread * Task;
 # define Task_SendMsg            lthread_sendmsg
 # define Task_Write              lthread_write
 # define Task_BeginBlockingCall  lthread_compute_begin
-# define Task_EndBlockingCall    lthread_compute_begin
+# define Task_EndBlockingCall    lthread_compute_end
 #endif
 
 
