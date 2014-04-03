@@ -47,11 +47,6 @@ static int        gPort = 27017;
 static HashTable *gProxies;
 
 
-/*
- * TODO: We leak proxies.
- */
-
-
 static OptionEntry entries[] = {
    { "bind_ip", 0, 0, OPTION_ARG_STRING, &gBindIp,
      "The ip address to bind to [0.0.0.0]" },
@@ -168,11 +163,26 @@ Proxy_HandleMessage (SocketManager *socket_manager,  /* IN */
 }
 
 
+static void
+Proxy_ConnectionClosed (SocketManager *socket_manager,
+                        Connection *connection,
+                        void *handler_data)
+{
+   Connection *server;
+
+   if ((server = HashTable_Lookup (gProxies, connection))) {
+      Connection_Destroy (server);
+      HashTable_Remove (gProxies, connection);
+   }
+}
+
+
 int
 main (int argc,     /* IN */
       char *argv[]) /* IN */
 {
    SocketManagerHandlers handlers = {
+      .Closed = Proxy_ConnectionClosed,
       .HandleMessage = Proxy_HandleMessage,
    };
    SocketManager socket_manager;
