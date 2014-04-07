@@ -529,3 +529,24 @@ DBFile_WritePage (DBFile *dbfile,     /* IN */
 
    return (ret == PAGE_SIZE);
 }
+
+
+void
+DBFile_Destroy (DBFile *dbfile) /* IN */
+{
+   DBFileVolume *vol;
+   int i;
+
+   ASSERT (dbfile);
+
+   for (i = 0; i < dbfile->volumes.len; i++) {
+      vol = &Array_Index (&dbfile->volumes, DBFileVolume, i);
+
+      if (vol->fd != FILE_INVALID) {
+         File_Close (vol->fd);
+         vol->fd = FILE_INVALID;
+      }
+   }
+
+   Array_Destroy (&dbfile->volumes);
+}
