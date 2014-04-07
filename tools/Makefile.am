@@ -26,3 +26,9 @@ bin_PROGRAMS += congo-proxy
 congo_proxy_CFLAGS = $(SHARED_CFLAGS)
 congo_proxy_SOURCES = tools/congo-proxy.c
 congo_proxy_LDADD = libCongo.la
+
+
+bin_PROGRAMS += congo-dump-freelist
+congo_dump_freelist_CFLAGS = $(SHARED_CFLAGS)
+congo_dump_freelist_SOURCES = tools/congo-dump-freelist.c
+congo_dump_freelist_LDADD = libCongo.la

@@ -9,6 +9,7 @@ config.*
 configure
 congo-bench
 congo-bench-net
+congo-dump-freelist
 congo-fuzzer
 congo-ping
 congo-proxy
