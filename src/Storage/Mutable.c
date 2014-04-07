@@ -65,9 +65,9 @@ Mutable_IO (Mutable *mutable, /* IN */
 
       if (mutate) {
          src = buf;
-         dst = ((char *)mutable->pages [cur].data) + offset;
+         dst = ((char *)mutable->pages [cur]->data) + offset;
       } else {
-         src = ((char *)mutable->pages [cur].data) + offset;
+         src = ((char *)mutable->pages [cur]->data) + offset;
          dst = buf;
       }
 
@@ -84,7 +84,7 @@ Mutable_IO (Mutable *mutable, /* IN */
 
 void
 Mutable_Init (Mutable *mutable,  /* IN */
-              Page *pages,       /* IN */
+              Page **pages,      /* IN */
               int pagecnt)       /* IN */
 {
    ASSERT (mutable);

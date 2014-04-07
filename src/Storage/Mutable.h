@@ -39,13 +39,13 @@ typedef struct _Mutable Mutable;
 
 struct _Mutable
 {
-   Page *pages;
-   int   pagecnt;
+   Page **pages;
+   int    pagecnt;
 };
 
 
 void Mutable_Init    (Mutable *mutable,
-                      Page *pages,
+                      Page **pages,
                       int pagecnt);
 void Mutable_IO      (Mutable *mutable,
                       bool mutate,

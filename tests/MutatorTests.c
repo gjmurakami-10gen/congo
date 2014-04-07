@@ -30,14 +30,14 @@ static uint8_t gTestBuf [PAGE_SIZE * 3];
 static void
 Test_Mutable_Basic (void)
 {
-   struct iovec iov[] = {
-      { .iov_base = &gTestBuf [PAGE_SIZE * 0], PAGE_SIZE },
-      { .iov_base = &gTestBuf [PAGE_SIZE * 1], PAGE_SIZE },
-      { .iov_base = &gTestBuf [PAGE_SIZE * 2], PAGE_SIZE },
-   };
    Mutable mutable = { 0 };
+   Page *pages[3];
 
-   Mutable_Init (&mutable, iov, N_ELEMENTS (iov));
+   pages [0] = (Page *)&gTestBuf [PAGE_SIZE*0];
+   pages [1] = (Page *)&gTestBuf [PAGE_SIZE*1];
+   pages [2] = (Page *)&gTestBuf [PAGE_SIZE*2];
+
+   Mutable_Init (&mutable, pages, N_ELEMENTS (pages));
 
    /*
     * Mutate some fields.
