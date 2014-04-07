@@ -537,3 +537,67 @@ Path_IsCopyOnWrite (const Path *path) /* IN */
       return false;
    }
 }
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * Path_Rename --
+ *
+ *       Renames the file found at @path to @new_path.
+ *
+ * Returns:
+ *       an int functionally the same as the result of rename().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+int
+Path_Rename (const Path *path,     /* IN */
+             const Path *new_path) /* IN */
+{
+   int ret;
+
+   ASSERT (path);
+   ASSERT (new_path);
+
+   Task_BeginBlockingCall ();
+   ret = rename (path->str, new_path->str);
+   Task_EndBlockingCall ();
+
+   return ret;
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * Path_Unlink --
+ *
+ *       Functionally similar to unlink(path->str)
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+int
+Path_Unlink (const Path *path) /* IN */
+{
+   int ret;
+
+   ASSERT (path);
+
+   Task_BeginBlockingCall ();
+   ret = unlink (path->str);
+   Task_EndBlockingCall ();
+
+   return ret;
+}

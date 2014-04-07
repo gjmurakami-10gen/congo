@@ -81,6 +81,9 @@ int           Path_Basename         (const Path *path,
 bool          Path_Parent           (const Path *path,
                                      Path *dirpath);
 bool          Path_Exists           (const Path *path);
+int           Path_Rename           (const Path *path,
+                                     const Path *new_path);
+int           Path_Unlink           (const Path *path);
 bool          Path_IsRelative       (const Path *path);
 bool          Path_IsDir            (const Path *path);
 bool          Path_IsWritable       (const Path *path);
