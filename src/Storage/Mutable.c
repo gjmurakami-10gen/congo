@@ -23,9 +23,6 @@
 #include <Storage/Mutable.h>
 
 
-#define PAGE_SIZE 4096
-
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -68,9 +65,9 @@ Mutable_IO (Mutable *mutable, /* IN */
 
       if (mutate) {
          src = buf;
-         dst = ((char *)mutable->iov [cur].iov_base) + offset;
+         dst = ((char *)mutable->pages [cur].data) + offset;
       } else {
-         src = ((char *)mutable->iov [cur].iov_base) + offset;
+         src = ((char *)mutable->pages [cur].data) + offset;
          dst = buf;
       }
 
@@ -87,15 +84,15 @@ Mutable_IO (Mutable *mutable, /* IN */
 
 void
 Mutable_Init (Mutable *mutable,  /* IN */
-              struct iovec *iov, /* IN */
-              size_t iovcnt)     /* IN */
+              Page *pages,       /* IN */
+              int pagecnt)       /* IN */
 {
    ASSERT (mutable);
-   ASSERT (iov);
-   ASSERT (iovcnt);
+   ASSERT (pages);
+   ASSERT (pagecnt);
 
-   mutable->iov = iov;
-   mutable->iovcnt = iovcnt;
+   mutable->pages = pages;
+   mutable->pagecnt = pagecnt;
 }
 
 

@@ -25,15 +25,13 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 
-#include <Core/Macros.h>
-#include <Core/Endian.h>
-#include <Core/Types.h>
+#include <Macros.h>
+#include <Endian.h>
+#include <Page.h>
+#include <Types.h>
 
 
 BEGIN_DECLS
-
-
-#define PAGE_SIZE 4096
 
 
 typedef struct _Mutable Mutable;
@@ -41,14 +39,14 @@ typedef struct _Mutable Mutable;
 
 struct _Mutable
 {
-   size_t        iovcnt;
-   struct iovec *iov;
+   Page *pages;
+   int   pagecnt;
 };
 
 
 void Mutable_Init    (Mutable *mutable,
-                      struct iovec *iov,
-                      size_t iovcnt);
+                      Page *pages,
+                      int pagecnt);
 void Mutable_IO      (Mutable *mutable,
                       bool mutate,
                       void *buf,
