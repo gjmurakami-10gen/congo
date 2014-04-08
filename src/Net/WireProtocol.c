@@ -213,7 +213,7 @@
 #undef RAW_BUFFER_FIELD
 
 #define RPC(_name, _code) \
-   static __inline__ void \
+   static void \
    WireProtocol##_name##_Printf (WireProtocol##_name *rpc) \
    { \
       ASSERT (rpc); \
