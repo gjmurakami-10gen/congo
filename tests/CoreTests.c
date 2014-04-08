@@ -21,70 +21,65 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winline"
 
-COUNTER (MyCounter1, "General", "MyCounter1", "A test counter")
-COUNTER (MyCounter2, "General", "MyCounter2", "A test counter")
-COUNTER (MyCounter3, "General", "MyCounter3", "A test counter")
-COUNTER (MyCounter4, "General", "MyCounter4", "A test counter")
-COUNTER (MyCounter5, "General", "MyCounter5", "A test counter")
-COUNTER (MyCounter6, "General", "MyCounter6", "A test counter")
-COUNTER (MyCounter7, "General", "MyCounter7", "A test counter")
-COUNTER (MyCounter8, "General", "MyCounter8", "A test counter")
-COUNTER (MyCounter9, "General", "MyCounter9", "A test counter")
-COUNTER (MyCounter10, "General", "MyCounter10", "A test counter")
+COUNTER (MyCounter01, "General", "MyCounter01", "A test counter")
+COUNTER (MyCounter02, "General", "MyCounter02", "A test counter")
+COUNTER (MyCounter03, "General", "MyCounter03", "A test counter")
+COUNTER (MyCounter04, "General", "MyCounter04", "A test counter")
+COUNTER (MyCounter05, "General", "MyCounter05", "A test counter")
+COUNTER (MyCounter06, "General", "MyCounter06", "A test counter")
+COUNTER (MyCounter07, "General", "MyCounter07", "A test counter")
+COUNTER (MyCounter08, "General", "MyCounter08", "A test counter")
+COUNTER (MyCounter09, "General", "MyCounter09", "A test counter")
+COUNTER (MyCounter010, "General", "MyCounter010", "A test counter")
 
 static void
 Test_Core_Counters_Basic (void)
 {
-   int same = 0;
    int i;
 
    Counters_Init ();
 
    assert (Platform_GetCpuCount () > 0);
 
-   assert (__MyCounter1.lines);
-   assert (__MyCounter2.lines);
-   assert (__MyCounter3.lines);
-   assert (__MyCounter4.lines);
-   assert (__MyCounter5.lines);
-   assert (__MyCounter6.lines);
-   assert (__MyCounter7.lines);
-   assert (__MyCounter8.lines);
-   assert (__MyCounter9.lines);
-   assert (__MyCounter10.lines);
+   assert (__MyCounter01.values);
+   assert (__MyCounter02.values);
+   assert (__MyCounter03.values);
+   assert (__MyCounter04.values);
+   assert (__MyCounter05.values);
+   assert (__MyCounter06.values);
+   assert (__MyCounter07.values);
+   assert (__MyCounter08.values);
+   assert (__MyCounter09.values);
+   assert (__MyCounter010.values);
 
-   same += (__MyCounter1.lines == __MyCounter2.lines);
-   same += (__MyCounter1.lines == __MyCounter3.lines);
-   same += (__MyCounter1.lines == __MyCounter4.lines);
-   same += (__MyCounter1.lines == __MyCounter5.lines);
-   same += (__MyCounter1.lines == __MyCounter6.lines);
-   same += (__MyCounter1.lines == __MyCounter7.lines);
-   same += (__MyCounter1.lines == __MyCounter8.lines);
-   same += (__MyCounter1.lines == __MyCounter9.lines);
-   same += (__MyCounter1.lines == __MyCounter10.lines);
+   assert (((uint8_t*)__MyCounter01.values + 8) == (void *)__MyCounter02.values);
+   assert (((uint8_t*)__MyCounter02.values + 8) == (void *)__MyCounter03.values);
+   assert (((uint8_t*)__MyCounter03.values + 8) == (void *)__MyCounter04.values);
+   assert (((uint8_t*)__MyCounter04.values + 8) == (void *)__MyCounter05.values);
+   assert (((uint8_t*)__MyCounter05.values + 8) == (void *)__MyCounter06.values);
+   assert (((uint8_t*)__MyCounter06.values + 8) == (void *)__MyCounter07.values);
+   assert (((uint8_t*)__MyCounter07.values + 8) == (void *)__MyCounter08.values);
+   assert (((uint8_t*)__MyCounter01.values + 64) == (void *)__MyCounter09.values);
 
-   assert (same > 0);
-   assert (same < 8);
+   assert (0 == MyCounter01_Get ());
+   MyCounter01_Increment ();
+   assert (1 == MyCounter01_Get ());
+   MyCounter01_Increment ();
+   assert (2 == MyCounter01_Get ());
 
-   assert (0 == MyCounter1_Get ());
-   MyCounter1_Increment ();
-   assert (1 == MyCounter1_Get ());
-   MyCounter1_Increment ();
-   assert (2 == MyCounter1_Get ());
-
-   MyCounter1_Decrement ();
-   assert (1 == MyCounter1_Get ());
-   MyCounter1_Decrement ();
-   assert (0 == MyCounter1_Get ());
+   MyCounter01_Decrement ();
+   assert (1 == MyCounter01_Get ());
+   MyCounter01_Decrement ();
+   assert (0 == MyCounter01_Get ());
 
    for (i = 1; i <= 1000; i++) {
-      MyCounter1_Increment ();
-      assert (i == MyCounter1_Get ());
+      MyCounter01_Increment ();
+      assert (i == MyCounter01_Get ());
    }
 
    for (i = 999; i >= 0; i--) {
-      MyCounter1_Decrement ();
-      assert (i == MyCounter1_Get ());
+      MyCounter01_Decrement ();
+      assert (i == MyCounter01_Get ());
    }
 }
 

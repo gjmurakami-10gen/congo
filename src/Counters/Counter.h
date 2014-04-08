@@ -42,15 +42,6 @@
  * To read the value, however, we must volatile read each cacheline for the
  * counter and add the results together.
  *
- * This could actually be implemented faster if we had a numeric value for
- * each counter and therefore could determine the offset from the base pointer
- * at compile time (excluding the CPU offset). Previous implementations have
- * in-fact done this. This implementation, however, does the slot calculation
- * at runtime to allow for more convenient API. XMACROS are no longer necessary
- * as COUNTER()s can be sprinkled throughout the source files. This has a cost
- * of about two instructions (and the cache-line read should be pipelined so
- * basically free).
- *
  * -- Christian (Jan 15, 2014)
  */
 
@@ -59,13 +50,11 @@ BEGIN_DECLS
 
 #ifdef HAVE_PLATFORM_GETCURRENTCPU
 # define COUNTER_ADD(c,v) \
-   c.lines [Platform_GetCurrentCpu()].slots [c.slot] += value
+   c.values [Platform_GetCurrentCpu()].value += value
 #else
 # warning "Platform_GetCurrentCpu() is not supported on your platform. " \
           "Counters will use atomics which has performance implications."
-# define COUNTER_ADD(c,v) \
-   AtomicInt64_Add( \
-      &c.lines [0].slots [c.slot], v)
+# define COUNTER_ADD(c,v) AtomicInt64_Add(&c.values[0].value, v)
 #endif
 
 
@@ -109,23 +98,23 @@ BEGIN_DECLS
    }
 
 
-typedef struct _Counter     Counter;
-typedef struct _CounterLine CounterLine;
+typedef struct _Counter      Counter;
+typedef struct _CounterValue CounterValue;
 
 
-struct _CounterLine
+struct _CounterValue
 {
-   volatile int64_t slots [8];
+   volatile int64_t value;
+   int64_t          padding [7];
 };
 
 
 struct _Counter
 {
-   CounterLine *lines;
-   const char  *category;
-   const char  *name;
-   const char  *description;
-   uint8_t      slot;
+   CounterValue *values;
+   const char   *category;
+   const char   *name;
+   const char   *description;
 };
 
 

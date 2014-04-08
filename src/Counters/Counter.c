@@ -63,16 +63,15 @@ typedef struct
 typedef struct
 {
    uint32_t offset;
-   uint32_t slot;
    char     category [28];
    char     name [32];
-   char     description [60];
+   char     description [64];
 } CounterInfo;
 #pragma pack(pop)
 
 
 STATIC_ASSERT (sizeof (CounterInfo) == 128);
-STATIC_ASSERT (sizeof (CounterLine) == 64);
+STATIC_ASSERT (sizeof (CounterValue) == 64);
 
 
 static Counters   gCounters;
@@ -230,8 +229,8 @@ Counters_LayoutInAlloc (Counters *counters) /* IN */
    size_t off = sizeof (CountersHeader);
    size_t ctr_off;
    int cpucount;
-   int j = 0;
    int i;
+   int j;
 
    ASSERT (counters);
 
@@ -239,7 +238,7 @@ Counters_LayoutInAlloc (Counters *counters) /* IN */
    ctr_off = off + (sizeof (CounterInfo) * counters->len);
    memset (counters->mem + ctr_off, 0, counters->memsize - ctr_off);
 
-   for (i = 0; i < counters->len; i++) {
+   for (i = 0, j = 0; i < counters->len; i++, j++) {
       strncpy (info.category,
                counters->counters [i]->category,
                sizeof (info.category));
@@ -253,9 +252,7 @@ Counters_LayoutInAlloc (Counters *counters) /* IN */
       info.category [sizeof info.category - 1] = '\0';
       info.name [sizeof info.name - 1] = '\0';
       info.description [sizeof info.description - 1] = '\0';
-
-      info.offset = ctr_off;
-      info.slot = j++;
+      info.offset = ctr_off + (j * 8);
 
       /*
        * The following requires an alignment of a pointer (so 8 on 64-bit).
@@ -263,11 +260,11 @@ Counters_LayoutInAlloc (Counters *counters) /* IN */
        * the case.
        */
       ASSERT ((((size_t)(counters->mem + ctr_off)) % 8) == 0);
-      counters->counters [i]->lines = (CounterLine *)(void *)(counters->mem + ctr_off);
-      counters->counters [i]->slot = info.slot;
+      counters->counters [i]->values =
+         (CounterValue *)(void *)(counters->mem + info.offset);
 
-      if (j == N_ELEMENTS (counters->counters [i]->lines->slots)) {
-         ctr_off += cpucount * sizeof (CounterLine);
+      if (j == 8) {
+         ctr_off += cpucount * sizeof (CounterValue);
          j = 0;
       }
 
@@ -399,7 +396,7 @@ Counters_DoInit (void)
 
    size = (sizeof (CountersHeader) +
            (ncounters * sizeof (CounterInfo)) +
-           (ncpu * ngroups * sizeof (CounterLine)));
+           (ncpu * ngroups * sizeof (CounterValue)));
    size = ((size / pagesize) + 1) * pagesize;
 
    gCounters.mem = Counters_AllocBuffer (size);
@@ -518,8 +515,7 @@ Counters_Foreach (CounterForeachFunc  func, /* IN */
          ctr.name = info->name;
          ctr.description = info->description;
          ASSERT ((((size_t)(gCounters.mem + info->offset)) % 8) == 0);
-         ctr.lines = (CounterLine *)(void *)(gCounters.mem + info->offset);
-         ctr.slot = info->slot;
+         ctr.values = (CounterValue *)(void *)(gCounters.mem + info->offset);
          func (&ctr, user_data);
       }
    }
@@ -587,7 +583,7 @@ Counter_Get (const Counter *counter) /* IN */
    ncpu = Platform_GetCpuCount ();
 
    for (i = 0; i < ncpu; i++) {
-      value += counter->lines [i].slots [counter->slot];
+      value += counter->values [i].value;
    }
 
    return value;
@@ -621,6 +617,6 @@ Counter_Reset (Counter *counter) /* IN */
    ncpu = Platform_GetCpuCount ();
 
    for (i = 0; i < ncpu; i++) {
-      AtomicInt64_Set (&counter->lines [i].slots [counter->slot], 0);
+      AtomicInt64_Set (&counter->values [i].value, 0);
    }
 }
